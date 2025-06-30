@@ -14,10 +14,10 @@ import (
 )
 
 type UserRepository struct {
-	db sqlx.DB
+	db *sqlx.DB
 }
 
-func NewUserRepository(db sqlx.DB) *UserRepository {
+func NewUserRepository(db *sqlx.DB) *UserRepository {
 	return &UserRepository{db: db}
 }
 
@@ -42,7 +42,10 @@ func (r *UserRepository) GetIDByTelegramID(ctx context.Context, telegramID int64
 
 	if err := r.db.GetContext(ctx, &userID, query, telegramID); err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			return userID, fmt.Errorf("userRepository.GetIDByTelegramID: %w", storage.ErrUserNotFound)
+			return userID, fmt.Errorf(
+				"userRepository.GetIDByTelegramID: %w",
+				storage.ErrUserNotFound,
+			)
 		}
 		return userID, fmt.Errorf("userRepository.GetIDByTelegramID: %w", err)
 	}
@@ -56,7 +59,10 @@ func (r *UserRepository) GetTelegramIDByID(ctx context.Context, id string) (int6
 
 	if err := r.db.GetContext(ctx, &telegramID, query, id); err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			return telegramID, fmt.Errorf("userRepository.GetTelegramIDByID: %w", storage.ErrUserNotFound)
+			return telegramID, fmt.Errorf(
+				"userRepository.GetTelegramIDByID: %w",
+				storage.ErrUserNotFound,
+			)
 		}
 		return telegramID, fmt.Errorf("userRepository.GetTelegramIDByID: %w", err)
 	}
