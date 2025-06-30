@@ -18,6 +18,7 @@ type server struct {
 	Addr        string `yaml:"addr"`
 	Port        int    `yaml:"port"`
 	MaxFileSize int64  `yaml:"max-file-size"`
+	FilePath    string `yaml:"file-path"`
 }
 
 type telegram struct {
