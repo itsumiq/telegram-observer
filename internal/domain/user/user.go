@@ -10,7 +10,13 @@ type User struct {
 	UpdatedAt  time.Time `db:"updated_at"`
 }
 
-func New(telegramID int64, username string) *User {
+func New(id string, telegramID int64, username string) *User {
 	timeNow := time.Now().UTC()
-	return &User{TelegramID: telegramID, Username: username, CreatedAt: timeNow, UpdatedAt: timeNow}
+	return &User{
+		ID:         id,
+		TelegramID: telegramID,
+		Username:   username,
+		CreatedAt:  timeNow,
+		UpdatedAt:  timeNow,
+	}
 }
