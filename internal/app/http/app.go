@@ -19,11 +19,17 @@ type App struct {
 	log  *slog.Logger
 }
 
-func New(addr string, port int, telegramHandler handler.Telegram, userHandler handler.User, log *slog.Logger) *App {
+func New(
+	addr string,
+	port int,
+	telegramHandler handler.Telegram,
+	userHandler handler.User,
+	log *slog.Logger,
+) *App {
 	r := mux.NewRouter()
 	r.HandleFunc("/telegram/webhook", telegramHandler.HandlePostWebhook).Methods(http.MethodPost)
 	r.HandleFunc("/users/{user_id}/photos", userHandler.HandlePostPhoto).Methods(http.MethodPost)
-	r.HandleFunc("users/{user_id}/videos", userHandler.HandlePostVideo).Methods(http.MethodPost)
+	// r.HandleFunc("users/{user_id}/videos", userHandler.HandlePostVideo).Methods(http.MethodPost)
 
 	srv := &http.Server{
 		Addr:    fmt.Sprintf("%s:%d", addr, port),
