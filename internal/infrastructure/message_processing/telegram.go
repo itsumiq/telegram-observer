@@ -16,14 +16,30 @@ type TelegramClient struct {
 	bot *tgbotapi.BotAPI
 }
 
-func NewTelegramClient(token string, logger *slog.Logger) (*TelegramClient, error) {
+func NewTelegramClient(
+	token string,
+	webhookUrl string,
+	logger *slog.Logger,
+) (*TelegramClient, error) {
 	bot, err := tgbotapi.NewBotAPI(token)
 	if err != nil {
 		logger.Error("failed to create telegram bot", "error", err)
 		return nil, fmt.Errorf("messageprocessing.NewTelegramClient: %w", err)
 	}
 
+	webhookCfg, err := tgbotapi.NewWebhook(webhookUrl)
+	if err != nil {
+		logger.Error("failed to create telegram bot webhook config", "error", err)
+		return nil, fmt.Errorf("messageprocessing.NewTelegramClient: %w", err)
+	}
+
+	if _, err := bot.Request(webhookCfg); err != nil {
+		logger.Error("failed to create telegram bot webhook", "error", err)
+		return nil, fmt.Errorf("messageprocessing.NewTelegramClient: %w", err)
+	}
+
 	logger.Info("successful created telegram bot client")
+
 	return &TelegramClient{bot: bot}, nil
 }
 
