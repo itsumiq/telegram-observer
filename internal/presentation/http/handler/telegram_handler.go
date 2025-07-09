@@ -56,32 +56,7 @@ func (h *telegramHandler) handleCommand(updateReq *updateRequest, log *slog.Logg
 	case "/start":
 		return h.handleStart(updateReq, log)
 	case "/profile":
-		userID, err := h.userService.GetIDByTelegramID(updateReq.Message.From.ID)
-		if err != nil {
-			if errors.Is(err, storage.ErrUserNotFound) {
-				log.Warn("user not found", slog.String("error", err.Error()))
-				if err := h.messageService.SendUserNotFoundResponse(updateReq.Message.From.ID); err != nil {
-					log.Error(
-						"failed to send response to user not found",
-						slog.String("error", err.Error()),
-					)
-					return err
-				}
-				return nil
-			}
-			log.Error("failed to get userID", slog.String("error", err.Error()))
-			return err
-		}
-
-		if err := h.messageService.SendProfileResponse(updateReq.Message.From.ID, userID); err != nil {
-			log.Error(
-				"failed to send response to profile command",
-				slog.String("error", err.Error()),
-			)
-			return err
-		}
-
-		return nil
+		return h.handleProfile(updateReq, log)
 	default:
 		if err := h.messageService.SendUnknownCommandResponse(updateReq.Message.From.ID); err != nil {
 			log.Error(
@@ -120,5 +95,33 @@ func (h *telegramHandler) handleStart(updateReq *updateRequest, log *slog.Logger
 	}
 
 	return nil
+}
 
+func (h *telegramHandler) handleProfile(updateReq *updateRequest, log *slog.Logger) error {
+	userID, err := h.userService.GetIDByTelegramID(updateReq.Message.From.ID)
+	if err != nil {
+		if errors.Is(err, storage.ErrUserNotFound) {
+			log.Warn("user not found", slog.String("error", err.Error()))
+			if err := h.messageService.SendUserNotFoundResponse(updateReq.Message.From.ID); err != nil {
+				log.Error(
+					"failed to send response to user not found",
+					slog.String("error", err.Error()),
+				)
+				return err
+			}
+			return nil
+		}
+		log.Error("failed to get userID", slog.String("error", err.Error()))
+		return err
+	}
+
+	if err := h.messageService.SendProfileResponse(updateReq.Message.From.ID, userID); err != nil {
+		log.Error(
+			"failed to send response to profile command",
+			slog.String("error", err.Error()),
+		)
+		return err
+	}
+
+	return nil
 }
