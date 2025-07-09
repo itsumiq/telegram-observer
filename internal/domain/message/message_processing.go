@@ -1,5 +1,5 @@
 package message
 
-type MessageProcessing interface {
+type Processing interface {
 	Send(msg *Message) error
 }

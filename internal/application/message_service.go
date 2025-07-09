@@ -13,10 +13,10 @@ type MessageService interface {
 }
 
 type messageService struct {
-	messageProcessing message.MessageProcessing
+	messageProcessing message.Processing
 }
 
-func NewMessageService(messageProcessing message.MessageProcessing) *messageService {
+func NewMessageService(messageProcessing message.Processing) *messageService {
 	return &messageService{messageProcessing: messageProcessing}
 }
 
