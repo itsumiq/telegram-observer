@@ -3,9 +3,10 @@ package message
 import "strings"
 
 type Message struct {
-	ChatID  int64
-	Text    string
-	Buttons []Button
+	ChatID   int64
+	Text     string
+	Buttons  []Button
+	FilePath string
 }
 
 type Button struct {
@@ -13,9 +14,9 @@ type Button struct {
 	Data string
 }
 
-func New(chatID int64, text string) *Message {
+func New(chatID int64, text string, filePath string) *Message {
 	text = convertToMarkdown(text)
-	return &Message{ChatID: chatID, Text: text}
+	return &Message{ChatID: chatID, Text: text, FilePath: filePath}
 }
 
 func (m *Message) AddButton(text string, data string) {
