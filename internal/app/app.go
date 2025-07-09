@@ -33,12 +33,13 @@ func New(cfg *config.Config, log *slog.Logger) (*App, error) {
 
 	userService := application.NewUserService(userRepo, uuider)
 	messageService := application.NewMessageService(tgClient)
+	fileService := application.NewFileService(cfg.Server.FilePath, cfg.Server.MaxFileSize, log)
 
 	tgHandler := handler.NewTelegramHandler(userService, messageService)
 	userHandler := handler.NewUserHandler(
 		userService,
+		fileService,
 		messageService,
-		cfg.Server.FilePath,
 		cfg.Server.MaxFileSize,
 	)
 
