@@ -54,30 +54,7 @@ func (h *telegramHandler) HandlePostWebhook(w http.ResponseWriter, r *http.Reque
 func (h *telegramHandler) handleCommand(updateReq *updateRequest, log *slog.Logger) error {
 	switch updateReq.Message.Command() {
 	case "/start":
-		_, err := h.userService.Create(updateReq.Message.From.ID, updateReq.Message.From.UserName)
-		if err != nil {
-			if errors.Is(err, storage.ErrDublicateUser) {
-				log.Warn("dublicate user", slog.String("error", err.Error()))
-				if err := h.messageService.SendStartResponse(updateReq.Message.From.ID); err != nil {
-					log.Error(
-						"failed to send response to start command",
-						slog.String("error", err.Error()),
-					)
-					return err
-				}
-
-				return nil
-			}
-			log.Error("failed to create user", slog.String("error", err.Error()))
-			return err
-		}
-
-		if err := h.messageService.SendStartResponse(updateReq.Message.From.ID); err != nil {
-			log.Error("failed to send response to start command", slog.String("error", err.Error()))
-			return err
-		}
-
-		return nil
+		return h.handleStart(updateReq, log)
 	case "/profile":
 		userID, err := h.userService.GetIDByTelegramID(updateReq.Message.From.ID)
 		if err != nil {
@@ -116,4 +93,32 @@ func (h *telegramHandler) handleCommand(updateReq *updateRequest, log *slog.Logg
 
 		return nil
 	}
+}
+
+func (h *telegramHandler) handleStart(updateReq *updateRequest, log *slog.Logger) error {
+	_, err := h.userService.Create(updateReq.Message.From.ID, updateReq.Message.From.UserName)
+	if err != nil {
+		if errors.Is(err, storage.ErrDublicateUser) {
+			log.Warn("dublicate user", slog.String("error", err.Error()))
+			if err := h.messageService.SendStartResponse(updateReq.Message.From.ID); err != nil {
+				log.Error(
+					"failed to send response to start command",
+					slog.String("error", err.Error()),
+				)
+				return err
+			}
+
+			return nil
+		}
+		log.Error("failed to create user", slog.String("error", err.Error()))
+		return err
+	}
+
+	if err := h.messageService.SendStartResponse(updateReq.Message.From.ID); err != nil {
+		log.Error("failed to send response to start command", slog.String("error", err.Error()))
+		return err
+	}
+
+	return nil
+
 }
