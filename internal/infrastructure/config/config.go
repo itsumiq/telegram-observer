@@ -23,11 +23,13 @@ type server struct {
 
 type telegram struct {
 	Token string `yaml:"token" env:"TELEGRAM_TOKEN" env-required:"true"`
+	Url   string `yaml:"url"   env:"TELEGRAM_URL"   env-required:"true"`
 }
 
 type sqlite struct {
-	DriverName string `yaml:"driver-name"`
-	Path       string `yaml:"path"        env:"SQLITE_PATH" env-required:"true"`
+	DriverName    string `yaml:"driver-name"`
+	Path          string `yaml:"path"           env:"SQLITE_PATH" env-required:"true"`
+	MigrationPath string `yaml:"migration-path"`
 }
 
 type Config struct {
