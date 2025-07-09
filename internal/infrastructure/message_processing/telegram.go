@@ -45,7 +45,7 @@ func NewTelegramClient(
 
 func (c *TelegramClient) Send(msg *message.Message) error {
 	tgMsg := tgbotapi.NewMessage(msg.ChatID, msg.Text)
-	tgMsg.ParseMode = "Markdown"
+	tgMsg.ParseMode = "MarkdownV2"
 
 	if len(msg.Buttons) != 0 {
 		tgMsg.ReplyMarkup = c.createReplyMarkup(msg.Buttons)
@@ -57,6 +57,18 @@ func (c *TelegramClient) Send(msg *message.Message) error {
 
 	return nil
 
+}
+
+func (c *TelegramClient) SendPhotoMessage(msg *message.Message) error {
+	photo := tgbotapi.NewPhoto(msg.ChatID, tgbotapi.FilePath(msg.FilePath))
+	photo.Caption = msg.Text
+	photo.ParseMode = "MarkdownV2"
+
+	if _, err := c.bot.Send(photo); err != nil {
+		return fmt.Errorf("telegramClient.SendPhoto: %w", err)
+	}
+
+	return nil
 }
 
 func (c *TelegramClient) createReplyMarkup(buttons []message.Button) tgbotapi.InlineKeyboardMarkup {
